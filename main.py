@@ -41,7 +41,7 @@ def on_press(key):
 
     if key == keyboard.Key.f7:
         global speed
-        sp_temp = easygui.enterbox(msg="Enter your speed greater than 0 (higher is slower, default is 0.025", title="Spray Printer")
+        sp_temp = easygui.enterbox(msg="Enter your speed greater than 0 (higher is slower, default is 0.01", title="Spray Printer")
         speed = float(sp_temp)
         easygui.msgbox("Speed set to " + str(speed), "Spray Printer")
 
@@ -56,7 +56,7 @@ listener.start()  # start to listen on a separate thread
 hex_picker = [243, 1017]
 start_pos = [599, 101]
 step_size = 6
-speed = 0.025
+speed = 0.01
 
 filename = easygui.fileopenbox()
 
@@ -97,12 +97,12 @@ for color in colors:
 
     check_paused()
 
-    pydirectinput.moveTo(hex_picker[0], hex_picker[1], speed * 10)
+    pydirectinput.moveTo(hex_picker[0] + 1, hex_picker[1])
+    pydirectinput.moveTo(hex_picker[0], hex_picker[1], speed)
     time.sleep(speed * 3)
     pydirectinput.mouseDown()
     time.sleep(speed * 5)
     pydirectinput.mouseUp()
-    check_paused()
     time.sleep(speed * 3)
     pydirectinput.typewrite(hexcode + "\n", speed * 1.5)
     check_paused()
@@ -112,8 +112,6 @@ for color in colors:
         time.sleep(speed)
 
     check_paused()
-    time.sleep(speed * 20)
-    check_paused()
 
     for y in range(img.height):
         for x in range(img.width):
@@ -122,14 +120,13 @@ for color in colors:
                 sys.exit(0)
                 
             if img.getpixel((x, y)) == color[1]:
+                pydirectinput.moveTo(start_pos[0] + (step_size * x) + 1, start_pos[1] + (step_size * y), speed)
                 pydirectinput.moveTo(start_pos[0] + (step_size * x), start_pos[1] + (step_size * y), speed)
 
                 pydirectinput.mouseDown()
                 time.sleep(speed * 3)
                 pydirectinput.mouseUp()
                 time.sleep(speed * 3)
-
-    pydirectinput.moveTo(start_pos[0], start_pos[1], speed * 10)
 
 timer = f"Finished in {round(time.time() - startTime, 3)} seconds"
 easygui.msgbox(timer, "Spray Painter")
